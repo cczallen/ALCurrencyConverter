@@ -67,6 +67,8 @@ class ALCurrencyConverterTableViewController: UITableViewController {
         let json: JSON = JSON(data: jsonData)
         self.USD2TWDExRate = json["USDTWD"]["Exrate"].double!
         
+        self.currencies.removeAll()
+        
         for (key, value) in json.dictionary! {
             print("\(key) : \(value)")
             
