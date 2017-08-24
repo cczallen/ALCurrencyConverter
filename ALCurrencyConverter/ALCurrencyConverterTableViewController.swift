@@ -20,7 +20,10 @@ struct ALCurrency {
 class ALCurrencyConverterTableViewController: UITableViewController {
     
     // MARK: Definitions
+    
+    let whiteList: [String] = ["TWD", "JPY", "HKD", "USD", "EUR"]
     var currencies: [ALCurrency] = []
+    var USD2TWDExRate: Double = 0
     
     
     
@@ -29,6 +32,8 @@ class ALCurrencyConverterTableViewController: UITableViewController {
     @IBAction func refresh(_ sender: Any) {
         self.query()
     }
+    
+    
     
     // MARK: - Private 
     
@@ -60,14 +65,19 @@ class ALCurrencyConverterTableViewController: UITableViewController {
     
     func parseData(jsonData: Data!)  {
         let json: JSON = JSON(data: jsonData)
+        self.USD2TWDExRate = json["USDTWD"]["Exrate"].double!
+        
         for (key, value) in json.dictionary! {
             print("\(key) : \(value)")
-            if key == "USD" {
-                continue
-            }
             
-            let name: String? = key.hasPrefix("USD") ? key.replacingOccurrences(of: "USD", with: "") : nil
+            var name: String? = key.hasPrefix("USD") ? key.replacingOccurrences(of: "USD", with: "") : nil
             if name != nil {
+                if !whiteList.contains(name!) {
+                    continue
+                }
+                if key == "USD" {
+                    name = "USD"
+                }
                 let exrate = value.dictionary?["Exrate"]?.double!
                 
                 let dateFormatter = DateFormatter()
@@ -115,55 +125,14 @@ class ALCurrencyConverterTableViewController: UITableViewController {
         // Configure the cell...
         let currency: ALCurrency = self.currencies[indexPath.row]
         cell.leftLabel.text = currency.name
-        cell.rightLabel.text = "\(currency.exrate)"
-
+        if self.USD2TWDExRate == 0 {
+            cell.rightLabel.text = ""
+            
+        } else {
+            let number: Double = (currency.name == "TWD") ? self.USD2TWDExRate : (self.USD2TWDExRate / currency.exrate)
+            cell.rightLabel.text = NSString(format: "%.2f", number) as String
+        }
+        
         return cell
     }
- 
-
-    /*
-    // Override to support conditional editing of the table view.
-    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the specified item to be editable.
-        return true
-    }
-    */
-
-    /*
-    // Override to support editing the table view.
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            // Delete the row from the data source
-            tableView.deleteRows(at: [indexPath], with: .fade)
-        } else if editingStyle == .insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-        }    
-    }
-    */
-
-    /*
-    // Override to support rearranging the table view.
-    override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
-
-    }
-    */
-
-    /*
-    // Override to support conditional rearranging of the table view.
-    override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the item to be re-orderable.
-        return true
-    }
-    */
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }
