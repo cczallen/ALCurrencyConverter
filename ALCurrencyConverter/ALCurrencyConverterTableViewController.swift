@@ -94,7 +94,7 @@ class ALCurrencyConverterTableViewController: UITableViewController {
         
         if self.currencies.count > 0 {
             DispatchQueue.main.async {
-                self.tableView.reloadData()
+                self.tableView.reloadSections(IndexSet.init(integer: 0), with: UITableViewRowAnimation.automatic)
             }
         }
     }
