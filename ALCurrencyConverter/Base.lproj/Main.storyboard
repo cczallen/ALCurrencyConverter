@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12121" systemVersion="16F73" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="JIk-tz-FIB">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
+        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--ALCurrencyConverter-->
+        <scene sceneID="3rc-oo-E4D">
+            <objects>
+                <tableViewController id="K7J-wp-Vsr" customClass="ALCurrencyConverterTableViewController" customModule="ALCurrencyConverter" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="9WC-Sl-9qI">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <prototypes>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="ALCurrencyCell" id="cqS-zS-Kgm" customClass="ALCurrencyCell" customModule="ALCurrencyConverter" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="28" width="375" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="cqS-zS-Kgm" id="3Y2-sb-amB">
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kuG-pc-OKR">
+                                            <rect key="frame" x="0.0" y="0.0" width="187.5" height="43.5"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="re9-af-iyX">
+                                            <rect key="frame" x="187.5" y="0.0" width="187" height="43.5"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstAttribute="bottom" secondItem="re9-af-iyX" secondAttribute="bottom" id="9k7-fL-zHs"/>
+                                        <constraint firstAttribute="trailing" secondItem="re9-af-iyX" secondAttribute="trailing" id="AL1-td-jU5"/>
+                                        <constraint firstItem="re9-af-iyX" firstAttribute="top" secondItem="3Y2-sb-amB" secondAttribute="top" id="Lls-wp-ove"/>
+                                        <constraint firstAttribute="bottom" secondItem="kuG-pc-OKR" secondAttribute="bottom" id="e0Q-Kc-oCD"/>
+                                        <constraint firstItem="kuG-pc-OKR" firstAttribute="width" secondItem="3Y2-sb-amB" secondAttribute="width" multiplier="0.5" id="fyn-hM-CNB"/>
+                                        <constraint firstItem="kuG-pc-OKR" firstAttribute="top" secondItem="3Y2-sb-amB" secondAttribute="top" id="ndg-O5-GbU"/>
+                                        <constraint firstItem="kuG-pc-OKR" firstAttribute="leading" secondItem="3Y2-sb-amB" secondAttribute="leading" id="pge-BL-kct"/>
+                                        <constraint firstItem="re9-af-iyX" firstAttribute="leading" secondItem="kuG-pc-OKR" secondAttribute="trailing" id="qVl-5J-29o"/>
+                                    </constraints>
+                                </tableViewCellContentView>
+                                <connections>
+                                    <outlet property="leftLabel" destination="kuG-pc-OKR" id="onk-zR-TMB"/>
+                                    <outlet property="rightLabel" destination="re9-af-iyX" id="wRf-vK-XgS"/>
+                                </connections>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="K7J-wp-Vsr" id="lAL-pq-vv4"/>
+                            <outlet property="delegate" destination="K7J-wp-Vsr" id="Qsv-qP-1jS"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" title="ALCurrencyConverter" id="5wn-8L-Ykn">
+                        <barButtonItem key="rightBarButtonItem" systemItem="refresh" id="b7Z-81-yAf">
+                            <connections>
+                                <action selector="refresh:" destination="K7J-wp-Vsr" id="4EC-ct-f3E"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="7a8-HD-h6z" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-134" y="315"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="xb1-Gu-FlG">
+            <objects>
+                <navigationController id="JIk-tz-FIB" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="VXF-MR-tYv">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="K7J-wp-Vsr" kind="relationship" relationship="rootViewController" id="MAq-zE-06b"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="vTA-zx-MzR" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1086" y="315"/>
+        </scene>
+    </scenes>
+</document>
