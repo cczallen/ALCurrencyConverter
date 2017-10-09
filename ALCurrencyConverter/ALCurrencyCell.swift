@@ -12,6 +12,8 @@ class ALCurrencyCell: UITableViewCell {
     
     // MARK: Definitions
     
+    @IBOutlet weak var leftBackgroundView: UIView!
+    @IBOutlet weak var rightBackgroundView: UIView!
     @IBOutlet weak var leftLabel: UILabel!
     @IBOutlet weak var rightLabel: UILabel!
     
@@ -26,8 +28,15 @@ class ALCurrencyCell: UITableViewCell {
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-
+        self.leftLabel.textColor = selected ? UIColor.black : UIColor.white
+        self.rightLabel.textColor = selected ? UIColor.black : UIColor.white
         // Configure the view for the selected state
+    }
+    
+    override func setHighlighted(_ highlighted: Bool, animated: Bool) {
+        super.setHighlighted(highlighted, animated: animated)
+        self.leftLabel.textColor = highlighted ? UIColor.black : UIColor.white
+        self.rightLabel.textColor = highlighted ? UIColor.black : UIColor.white
     }
 
 }

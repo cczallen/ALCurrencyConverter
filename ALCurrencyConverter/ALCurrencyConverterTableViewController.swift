@@ -8,6 +8,7 @@
 
 import UIKit
 import SwiftyJSON
+import SwiftyPickerPopover
 
 struct ALCurrency {
     var name: String
@@ -17,26 +18,90 @@ struct ALCurrency {
 
 
 
-class ALCurrencyConverterTableViewController: UITableViewController {
+class ALCurrencyConverterTableViewController: UITableViewController  {
     
     // MARK: Definitions
     
-    let whiteList: [String] = ["TWD", "JPY", "HKD", "USD", "EUR"]
-    var currencies: [ALCurrency] = []
+    let whiteList: [String] = ["TWD", "JPY", "HKD", "USD", "EUR", "BTC"]
+    var currencyDic: [String: ALCurrency] = [String: ALCurrency]()
     var USD2TWDExRate: Double = 0
+    var currentCurrencyName: String = "HKD"
+    var currentFactor: Double = 1.0 {
+        didSet {
+            self.reloadWithoutAnimation()
+            let offsetX: CGFloat = self.currentFactor > oldValue ? -10:10
+            
+//            UIView.animate(withDuration: 0.1, animations: {
+//                self.tableView.transform = CGAffineTransform(translationX: offsetX, y: 0)
+//
+//            }, completion: { (finished) in
+//
+//                UIView.animate(withDuration: 0.1, animations: {
+//                    self.tableView.transform = CGAffineTransform.identity
+//                })
+//            })
+            
+            func offsetAnimate(view: UIView) -> Void {
+                UIView.animate(withDuration: 0.1, animations: {
+                    view.transform = CGAffineTransform(translationX: offsetX, y: 0)
+                    
+                }, completion: { (finished) in
+                    
+                    UIView.animate(withDuration: 0.1, animations: {
+                        view.transform = CGAffineTransform.identity
+                    })
+                })
+            }
+            
+            for cell in self.tableView.visibleCells {
+                let currencyCell = cell as! ALCurrencyCell
+                offsetAnimate(view: currencyCell.leftLabel)
+                offsetAnimate(view: currencyCell.rightLabel)
+            }
+        }
+    }
     
     
     
-    // MARK: - Actions
+    // MARK: - Life Cycle
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        self.setupGestures()
+        self.query()
+    }
+    
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
+    }
+    
+    
+    
+    // MARK: - Action
     
     @IBAction func refresh(_ sender: Any) {
         self.query()
+    }
+    
+    @IBAction func stepperValueChanged(_ stepper: UIStepper) {
+        self.currentFactor = pow(10, stepper.value) //Double(10 ^ Int(stepper.value))
     }
     
     
     
     // MARK: - Private 
     
+    func setupGestures() -> Void {
+        var gesture = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipe))
+        gesture.direction = .left
+        self.tableView.addGestureRecognizer(gesture)
+        
+        gesture = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipe))
+        gesture.direction = .right
+        self.tableView.addGestureRecognizer(gesture)
+    }
+
     func query() {
         
         let useMockData = true
@@ -67,14 +132,12 @@ class ALCurrencyConverterTableViewController: UITableViewController {
         let json: JSON = JSON(data: jsonData)
         self.USD2TWDExRate = json["USDTWD"]["Exrate"].double!
         
-        self.currencies.removeAll()
-        
         for (key, value) in json.dictionary! {
             print("\(key) : \(value)")
             
             var name: String? = key.hasPrefix("USD") ? key.replacingOccurrences(of: "USD", with: "") : nil
             if name != nil {
-                if !whiteList.contains(name!) {
+                if whiteList.count > 0 && !whiteList.contains(name!) {
                     continue
                 }
                 if key == "USD" {
@@ -88,53 +151,108 @@ class ALCurrencyConverterTableViewController: UITableViewController {
                 let time = dateFormatter.date(from: (value.dictionary?["UTC"]?.string)!) //according to date format your date string
                 
                 let currency = ALCurrency(name: name!, exrate: exrate!, time: time!)
-                self.currencies.append(currency)
+                self.currencyDic[name!] = currency
             }
         }
         
-        if self.currencies.count > 0 {
+        if self.currencyDic.count > 0 {
             DispatchQueue.main.async {
-                self.tableView.reloadSections(IndexSet.init(integer: 0), with: UITableViewRowAnimation.automatic)
+                self.reload()
+            }
+        }
+    }
+    
+    func reloadWithoutAnimation() -> Void {
+        self.tableView.reloadData()
+    }
+    
+    func reload() -> Void {
+        let tmpCurrencyDic: [String: ALCurrency] = self.currencyDic
+        self.currencyDic = [String: ALCurrency]()
+        self.tableView.reloadSections(IndexSet.init(integer: 1), with: UITableViewRowAnimation.automatic)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2, execute: {
+            self.currencyDic = tmpCurrencyDic
+            self.tableView.reloadSections(IndexSet.init(integersIn: 0...1), with: UITableViewRowAnimation.automatic)
+        })
+    }
+    
+    func showPicker() -> Void {
+        let allCurrencies = Array(self.currencyDic.keys)
+        let selectedRow = allCurrencies.index(of: self.currentCurrencyName) ?? Int(0)
+        StringPickerPopover(title: "Currency", choices: allCurrencies)
+            .setSelectedRow(selectedRow)
+            .setDoneButton { (popover, selectedRow, selectedString) in
+                print("done row \(selectedRow) \(selectedString)")
+                self.currentCurrencyName = selectedString
+                self.reload()
+            }
+            .appear(originView: self.tableView.cellForRow(at: IndexPath(row: 0, section: 0))!, baseViewController: self)
+    }
+    
+    @objc func handleSwipe(gesture: UISwipeGestureRecognizer) -> Void {
+        if gesture.direction == UISwipeGestureRecognizerDirection.right {
+            print("Swipe Right")
+            if self.currentFactor >= 10 {
+                self.currentFactor /= 10
+            }
+        }
+        else if gesture.direction == UISwipeGestureRecognizerDirection.left {
+            print("Swipe Left")
+            if self.currentFactor <= 10000 {
+                self.currentFactor *= 10
             }
         }
     }
     
     
     
-    // MARK: - Life Cycle
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        self.query()
-    }
+    // MARK: - Table view data source & delegate
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    override func numberOfSections(in tableView: UITableView) -> Int {
+        return 2;
     }
-    
-    
-    
-    // MARK: - Table view data source
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.currencies.count
+        if section == 0 {
+            return 1;
+        } else {
+            return self.currencyDic.count > 0 ? 10:0;
+        }
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell: ALCurrencyCell = tableView.dequeueReusableCell(withIdentifier: "ALCurrencyCell", for: indexPath) as! ALCurrencyCell
 
         // Configure the cell...
-        let currency: ALCurrency = self.currencies[indexPath.row]
-        cell.leftLabel.text = currency.name
+        guard let currency: ALCurrency = self.currencyDic[self.currentCurrencyName] else {
+            return cell
+        }
+        
+        if indexPath.section == 0 {
+            cell.leftLabel.text = currency.name
+            cell.rightLabel.text = "TWD"
+            return cell;
+        }
+        
         if self.USD2TWDExRate == 0 {
             cell.rightLabel.text = ""
             
         } else {
-            let number: Double = (currency.name == "TWD") ? self.USD2TWDExRate : (self.USD2TWDExRate / currency.exrate)
-            cell.rightLabel.text = NSString(format: "%.2f", number) as String
+            let row = Double(indexPath.row) + 1.0
+            cell.leftLabel.text = NSString(format: "%.0f", row * self.currentFactor) as String
+            let baseDollar = row * self.currentFactor;
+            let number: Double = (self.USD2TWDExRate / currency.exrate) * baseDollar;
+            let format = number < 100 ? "%.2f":"%.0f" as NSString
+            cell.rightLabel.text = NSString(format: format, number) as String
         }
         
         return cell
+    }
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if indexPath.section != 0 {
+            return
+        }
+        self.showPicker()
     }
 }

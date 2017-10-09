@@ -7,5 +7,5 @@ target 'ALCurrencyConverter' do
 
   # Pods for ALCurrencyConverter
   pod 'SwiftyJSON'
-
+  pod 'SwiftyPickerPopover', :git => 'https://github.com/hsylife/SwiftyPickerPopover', :branch => 'swift4'
 end

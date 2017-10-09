@@ -1,12 +1,25 @@
 PODS:
   - SwiftyJSON (3.1.4)
+  - SwiftyPickerPopover (5.3.0)
 
 DEPENDENCIES:
   - SwiftyJSON
+  - SwiftyPickerPopover (from `https://github.com/hsylife/SwiftyPickerPopover`, branch `swift4`)
+
+EXTERNAL SOURCES:
+  SwiftyPickerPopover:
+    :branch: swift4
+    :git: https://github.com/hsylife/SwiftyPickerPopover
+
+CHECKOUT OPTIONS:
+  SwiftyPickerPopover:
+    :commit: 56afda6c3ed0294322c645699ac0031f335e1c90
+    :git: https://github.com/hsylife/SwiftyPickerPopover
 
 SPEC CHECKSUMS:
   SwiftyJSON: c2842d878f95482ffceec5709abc3d05680c0220
+  SwiftyPickerPopover: a0599689c09b7ec97d287271d755c22506d848cb
 
-PODFILE CHECKSUM: 16d464886d38489b043063b692c495a205e39593
+PODFILE CHECKSUM: f4f9e03f84d53f15bf52ef8865a16773c31e3bb1
 
 COCOAPODS: 1.2.1
