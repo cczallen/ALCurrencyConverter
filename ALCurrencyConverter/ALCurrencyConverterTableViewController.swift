@@ -25,7 +25,7 @@ class ALCurrencyConverterTableViewController: UITableViewController  {
     let whiteList: [String] = ["TWD", "JPY", "HKD", "USD", "EUR", "BTC"]
     var currencyDic: [String: ALCurrency] = [String: ALCurrency]()
     var USD2TWDExRate: Double = 0
-    var currentCurrencyName: String = "HKD"
+    var currentCurrencyName: String = "USD"
     var currentFactor: Double = 1.0 {
         didSet {
             self.reloadWithoutAnimation()
@@ -137,12 +137,13 @@ class ALCurrencyConverterTableViewController: UITableViewController  {
             
             var name: String? = key.hasPrefix("USD") ? key.replacingOccurrences(of: "USD", with: "") : nil
             if name != nil {
-                if whiteList.count > 0 && !whiteList.contains(name!) {
-                    continue
-                }
                 if key == "USD" {
                     name = "USD"
                 }
+                if whiteList.count > 0 && !whiteList.contains(name!) {
+                    continue
+                }
+               
                 let exrate = value.dictionary?["Exrate"]?.double!
                 
                 let dateFormatter = DateFormatter()
