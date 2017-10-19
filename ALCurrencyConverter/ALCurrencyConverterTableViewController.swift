@@ -199,10 +199,42 @@ class ALCurrencyConverterTableViewController: UITableViewController  {
         }
         else if gesture.direction == UISwipeGestureRecognizerDirection.left {
             print("Swipe Left")
-            if self.currentFactor <= 10000 {
+            if self.currentFactor <= 1000000 {
                 self.currentFactor *= 10
             }
         }
+    }
+    
+    func formatedString(number: Double, allowDecimalPoint: Bool) -> String {
+        var modifiedNumber = number
+        var string: String
+        
+        let suffixes: [String] = ["", "K", "M", "B"]
+        var suffix: String = ""
+        let isLargeNumber = number >= 100000
+        if isLargeNumber {
+            repeat {
+                let index = suffixes.index(of: suffix)! + 1
+                modifiedNumber = modifiedNumber / 1000.0
+                suffix = suffixes[index]
+            } while modifiedNumber >= 1000 && ((suffixes.index(of: suffix)! + 1) < suffixes.count)
+        }
+        
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        var maximumFractionDigits: Int = 0
+        if allowDecimalPoint {
+            let decimalPointThreshold: Double = isLargeNumber ? 1000 : 100
+            maximumFractionDigits = modifiedNumber < decimalPointThreshold ? 1:0
+        }
+        formatter.maximumFractionDigits = maximumFractionDigits
+        string = formatter.string(from: NSNumber(value: modifiedNumber))!
+        
+        if isLargeNumber {
+            string += suffix
+        }
+        
+        return string
     }
     
     
@@ -240,11 +272,10 @@ class ALCurrencyConverterTableViewController: UITableViewController  {
             
         } else {
             let row = Double(indexPath.row) + 1.0
-            cell.leftLabel.text = NSString(format: "%.0f", row * self.currentFactor) as String
+            cell.leftLabel.text = self.formatedString(number: row * self.currentFactor, allowDecimalPoint: false)
             let baseDollar = row * self.currentFactor;
             let number: Double = (self.USD2TWDExRate / currency.exrate) * baseDollar;
-            let format = number < 100 ? "%.2f":"%.0f" as NSString
-            cell.rightLabel.text = NSString(format: format, number) as String
+            cell.rightLabel.text = self.formatedString(number: number, allowDecimalPoint: true)
         }
         
         return cell
