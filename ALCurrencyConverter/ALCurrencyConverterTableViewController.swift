@@ -22,6 +22,7 @@ class ALCurrencyConverterTableViewController: UITableViewController  {
     
     // MARK: Definitions
     
+    @IBOutlet weak var stepper: UIStepper!
     let whiteList: [String] = ["TWD", "JPY", "HKD", "USD", "EUR", "BTC"]
     var currencyDic: [String: ALCurrency] = [String: ALCurrency]()
     var USD2TWDExRate: Double = 0
@@ -29,7 +30,8 @@ class ALCurrencyConverterTableViewController: UITableViewController  {
     var currentFactor: Double = 1.0 {
         didSet {
             self.reloadWithoutAnimation()
-            let offsetX: CGFloat = self.currentFactor > oldValue ? -10:10
+            let isIncreased = self.currentFactor > oldValue
+            let offsetX: CGFloat = isIncreased ? -10:10
             
 //            UIView.animate(withDuration: 0.1, animations: {
 //                self.tableView.transform = CGAffineTransform(translationX: offsetX, y: 0)
@@ -195,12 +197,14 @@ class ALCurrencyConverterTableViewController: UITableViewController  {
             print("Swipe Right")
             if self.currentFactor >= 10 {
                 self.currentFactor /= 10
+                self.stepper.value -= 1
             }
         }
         else if gesture.direction == UISwipeGestureRecognizerDirection.left {
             print("Swipe Left")
             if self.currentFactor <= 1000000 {
                 self.currentFactor *= 10
+                self.stepper.value += 1
             }
         }
     }
